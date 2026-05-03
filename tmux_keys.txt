@@ -1,6 +1,11 @@
 tmux key notes
 ==============
 
+Environment
+- This tmux setup is documented here as a Windows-oriented setup
+- Copy mode uses clip.exe, so clipboard integration is written for Windows
+- Prefix has been changed from Ctrl+b to Ctrl+w
+
 Prefix
 - Prefix key: Ctrl+w
 - Send literal prefix to nested session: Ctrl+w then Ctrl+w

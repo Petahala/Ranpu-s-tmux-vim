@@ -1,9 +1,14 @@
 Neovim key notes
 ================
 
+Environment
+- This config is used on Windows
+- Active config path: C:\Users\A\AppData\Local\nvim
+- GUI-specific behavior may differ between terminal Neovim and Neovide
+
 General
 - Leader key: Space
-- Clipboard: uses system clipboard by default via unnamedplus
+- Clipboard: uses Windows system clipboard by default via unnamedplus
 
 Window / split movement
 - Ctrl+h : move to left split
@@ -29,7 +34,7 @@ Scrolling
 - Ctrl+u : half-page up and keep cursor centered
 
 Build / run
-- F5 : save current C/C++ file, compile it, press Enter to run, press Enter again to return
+- F5 : save current C/C++ file, compile it with Windows g++, press Enter to run, press Enter again to return
 - F6 : refresh build-clangd/compile_commands.json with CMake
 - F7 : build current CMake project in build-clangd
 
@@ -47,6 +52,11 @@ LSP / diagnostics
 - F2      : rename symbol
 - F4      : code action
 - :LspRestart : restart current buffer LSP client
+
+C/C++ notes
+- clangd is configured explicitly for the Windows LLVM install
+- compile_commands.json is expected in build-clangd
+- the current build flow uses PowerShell and Windows executable paths
 
 Completion
 - Ctrl+Space : trigger completion

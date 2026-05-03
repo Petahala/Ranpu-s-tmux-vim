@@ -1,17 +1,11 @@
-# Dotfiles
+# Windows tmux + Neovim Dotfiles
+This repository stores the current Windows-focused `Neovim` and `tmux` configuration used on this machine.
 
-This repository stores the current `Neovim` and `tmux` configuration under Windows11.
+This is not a generic Linux dotfiles repo. Some behavior is intentionally Windows-specific, especially:
 
-## Structure
-
-- `nvim/`
-  Current Neovim config copied from `C:\Users\A\AppData\Local\nvim`
-- `tmux/tmux.conf`
-  Current tmux config
-- `nvim_keys.txt`
-  Practical Neovim key usage notes
-- `tmux_keys.txt`
-  Practical tmux key usage notes
+- `Neovim` lives under `C:\Users\A\AppData\Local\nvim`
+- C/C++ build commands use Windows paths and PowerShell
+- `tmux` copy mode sends text to the Windows clipboard through `clip.exe`
 
 ## Current install locations
 
@@ -20,7 +14,18 @@ This repository stores the current `Neovim` and `tmux` configuration under Windo
 - tmux config in this workspace:
   `C:\Users\A\cpp\tmux.conf`
 
-## Restore these configs on this machine
+## Repository contents
+
+- `nvim/`
+  Active Neovim config copied from the Windows Neovim config directory
+- `tmux/tmux.conf`
+  Current tmux config
+- `nvim_keys.txt`
+  Practical Neovim key notes for this setup
+- `tmux_keys.txt`
+  Practical tmux key notes for this setup
+
+## Restore these configs on Windows
 
 ### Neovim
 
@@ -36,22 +41,19 @@ Copy:
 
 to the place where you keep your active `tmux.conf`.
 
-## GitHub push steps
+## Update and push
 
-This machine does not currently have `gh` installed, so the repo is prepared locally only.
-
-After you create an empty GitHub repo, run:
+This repository is already connected to GitHub. To update it later, run:
 
 ```powershell
 cd C:\Users\A\cpp\dotfiles
 git add .
-git commit -m "Initial dotfiles import"
-git branch -M main
-git remote add origin <your-github-repo-url>
-git push -u origin main
+git commit -m "update configs"
+git push
 ```
 
 ## Notes
 
 - The Neovim config includes the current `tokyonight` theme setup.
 - The Neovim config includes current `clangd`, `pyright`, completion, and `F5`/`F6`/`F7` workflow settings.
+- The tmux config uses `Ctrl+w` as prefix instead of the default `Ctrl+b`.
