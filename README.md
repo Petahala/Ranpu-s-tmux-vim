@@ -24,6 +24,8 @@ This is not a generic Linux dotfiles repo. Some behavior is intentionally Window
   Practical Neovim key notes for this setup
 - `tmux_keys.txt`
   Practical tmux key notes for this setup
+- `WINDOWS_NOTES.md`
+  Windows-specific notes for the Neovim setup
 
 ## Restore these configs on Windows
 
