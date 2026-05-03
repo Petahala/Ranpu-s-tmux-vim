@@ -1,6 +1,6 @@
 # Dotfiles
 
-This repository stores the current `Neovim` and `tmux` configuration used on this machine.
+This repository stores the current `Neovim` and `tmux` configuration under Windows11.
 
 ## Structure
 
