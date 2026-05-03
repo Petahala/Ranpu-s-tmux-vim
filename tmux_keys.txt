@@ -1,0 +1,39 @@
+tmux key notes
+==============
+
+Prefix
+- Prefix key: Ctrl+w
+- Send literal prefix to nested session: Ctrl+w then Ctrl+w
+
+Mouse
+- Mouse support: enabled
+
+Pane split
+- Prefix n : split current pane into upper/lower panes
+- Prefix v : split current pane into left/right panes
+
+Pane movement
+- Ctrl+h : focus left pane
+- Ctrl+j : focus lower pane
+- Ctrl+k : focus upper pane
+- Ctrl+l : focus right pane
+
+Pane resize
+- Prefix h : resize pane left by 5
+- Prefix l : resize pane right by 5
+- Prefix k : resize pane up by 2
+- Prefix j : resize pane down by 2
+- Prefix H : resize pane left by 5
+- Prefix L : resize pane right by 5
+- Prefix K : resize pane up by 2
+- Prefix J : resize pane down by 2
+
+Copy mode
+- Prefix s : enter copy mode
+- Copy mode uses vi keys
+- In copy mode, v : begin selection
+- In copy mode, y : copy selection to Windows clipboard with clip.exe and exit copy mode
+- In copy mode, Enter : copy selection to Windows clipboard with clip.exe and exit copy mode
+
+Status
+- Prefix active status color changes are enabled in the current config

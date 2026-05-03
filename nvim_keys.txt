@@ -1,0 +1,72 @@
+Neovim key notes
+================
+
+General
+- Leader key: Space
+- Clipboard: uses system clipboard by default via unnamedplus
+
+Window / split movement
+- Ctrl+h : move to left split
+- Ctrl+j : move to lower split
+- Ctrl+k : move to upper split
+- Ctrl+l : move to right split
+
+Window resize
+- Ctrl+Up    : increase split height
+- Ctrl+Down  : decrease split height
+- Ctrl+Left  : decrease split width
+- Ctrl+Right : increase split width
+
+Buffers
+- Shift+h : previous buffer
+- Shift+l : next buffer
+
+File tree
+- Space e : toggle NvimTree
+
+Scrolling
+- Ctrl+d : half-page down and keep cursor centered
+- Ctrl+u : half-page up and keep cursor centered
+
+Build / run
+- F5 : save current C/C++ file, compile it, press Enter to run, press Enter again to return
+- F6 : refresh build-clangd/compile_commands.json with CMake
+- F7 : build current CMake project in build-clangd
+
+LSP / diagnostics
+- K       : hover documentation
+- Space k : show diagnostic float
+- gd      : go to definition
+- gD      : go to declaration
+- gi      : go to implementation
+- go      : go to type definition
+- gr      : list references
+- gs      : signature help
+- [d      : previous diagnostic
+- ]d      : next diagnostic
+- F2      : rename symbol
+- F4      : code action
+- :LspRestart : restart current buffer LSP client
+
+Completion
+- Ctrl+Space : trigger completion
+- Ctrl+j     : next completion item
+- Ctrl+k     : previous completion item
+- Enter      : confirm selected completion item
+- Tab        : next completion item when menu is visible
+- Shift+Tab  : previous completion item when menu is visible
+- Ctrl+b     : scroll docs up
+- Ctrl+f     : scroll docs down
+- Ctrl+e     : cancel completion
+
+Terminal inside Neovim
+- Ctrl+h : move to left split from terminal mode
+- Ctrl+j : move to lower split from terminal mode
+- Ctrl+k : move to upper split from terminal mode
+- Ctrl+l : move to right split from terminal mode
+
+Editing helpers
+- Q : disabled
+- Visual mode Alt+j / Alt+k : move selected lines down / up
+- Visual mode p : paste without overwriting the unnamed register
+- Visual block J / K / Alt+j / Alt+k : move selected block
