@@ -43,16 +43,6 @@ Copy:
 
 to the place where you keep your active `tmux.conf`.
 
-## Update and push
-
-This repository is already connected to GitHub. To update it later, run:
-
-```powershell
-cd C:\Users\A\cpp\dotfiles
-git add .
-git commit -m "update configs"
-git push
-```
 
 ## Notes
 
