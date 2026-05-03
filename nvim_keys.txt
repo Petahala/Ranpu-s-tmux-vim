@@ -35,10 +35,11 @@ Scrolling
 
 Build / run
 - F5 : save current C/C++ file and compile it with Windows g++
-- F6 : run the current file's matching .exe in the persistent build terminal
+- F6 : run the current file's matching .exe in the dedicated build terminal
 - F7 : build current CMake project in build-clangd
 - F8 : refresh build-clangd/compile_commands.json with CMake
-- F5 / F6 / F7 / F8 all use the same persistent bottom PowerShell terminal pane
+- F5 / F6 / F7 / F8 all reuse the same bottom build terminal pane
+- If the build terminal pane was closed, these keys will recreate it automatically
 
 LSP / diagnostics
 - K       : hover documentation

@@ -17,57 +17,77 @@ local build_terminal = {
   job = nil,
 }
 
-local function ensure_build_terminal()
-  if build_terminal.buf and vim.api.nvim_buf_is_valid(build_terminal.buf) then
-    build_terminal.job = vim.b[build_terminal.buf].terminal_job_id or build_terminal.job
-  end
+local function is_valid_window(win)
+  return type(win) == "number" and win > 0 and pcall(vim.api.nvim_win_get_buf, win)
+end
 
-  if build_terminal.buf and vim.api.nvim_buf_is_valid(build_terminal.buf) and build_terminal.win and vim.api.nvim_win_is_valid(build_terminal.win) then
-    return build_terminal.buf, build_terminal.win, build_terminal.job
-  end
-
+local function ensure_build_terminal_window()
   local previous_window = vim.api.nvim_get_current_win()
 
-  vim.cmd("botright 12split")
-  build_terminal.win = vim.api.nvim_get_current_win()
-
-  if build_terminal.buf and vim.api.nvim_buf_is_valid(build_terminal.buf) then
-    vim.api.nvim_win_set_buf(build_terminal.win, build_terminal.buf)
-  else
-    build_terminal.buf = vim.api.nvim_create_buf(false, true)
-    vim.api.nvim_win_set_buf(build_terminal.win, build_terminal.buf)
-    vim.bo[build_terminal.buf].bufhidden = "hide"
-    build_terminal.job = vim.fn.termopen({
-      "powershell",
-      "-NoLogo",
-      "-NoProfile",
-    })
-    vim.api.nvim_buf_set_name(build_terminal.buf, "Build Terminal")
+  if not is_valid_window(build_terminal.win) then
+    vim.cmd("botright 12split")
+    build_terminal.win = vim.api.nvim_get_current_win()
   end
 
-  if vim.api.nvim_win_is_valid(previous_window) then
+  if is_valid_window(previous_window) then
     vim.api.nvim_set_current_win(previous_window)
   end
 
-  return build_terminal.buf, build_terminal.win, build_terminal.job
+  return build_terminal.win
 end
 
-local function send_to_build_terminal(lines, cwd)
-  local _, _, job = ensure_build_terminal()
-
-  if not job then
-    vim.notify("Build terminal is not available.", vim.log.levels.ERROR)
-    return
+local function reset_build_terminal_session()
+  if build_terminal.job then
+    pcall(vim.fn.jobstop, build_terminal.job)
+    build_terminal.job = nil
   end
 
-  local command = table.concat({
+  if build_terminal.buf and vim.api.nvim_buf_is_valid(build_terminal.buf) then
+    pcall(vim.api.nvim_buf_delete, build_terminal.buf, { force = true })
+    build_terminal.buf = nil
+  end
+end
+
+local function open_build_terminal(lines, cwd)
+  local previous_window = vim.api.nvim_get_current_win()
+  local win = ensure_build_terminal_window()
+
+  reset_build_terminal_session()
+
+  if not is_valid_window(win) then
+    vim.cmd("botright 12split")
+    win = vim.api.nvim_get_current_win()
+    build_terminal.win = win
+  end
+
+  build_terminal.buf = vim.api.nvim_create_buf(false, true)
+  vim.api.nvim_win_set_buf(win, build_terminal.buf)
+  vim.bo[build_terminal.buf].bufhidden = "hide"
+  vim.api.nvim_buf_set_name(build_terminal.buf, "Build Terminal")
+
+  local statements = {
     "$Host.UI.RawUI.WindowTitle = 'Build Terminal'",
     "$ErrorActionPreference = 'Continue'",
     "Set-Location -LiteralPath " .. ps_quote(cwd),
-    unpack(lines),
-  }, "\r\n")
+  }
 
-  vim.api.nvim_chan_send(job, command .. "\r\n")
+  vim.list_extend(statements, lines)
+
+  local command = "& { " .. table.concat(statements, "; ") .. " }"
+
+  vim.api.nvim_set_current_win(win)
+  build_terminal.job = vim.fn.termopen({
+    "powershell",
+    "-NoLogo",
+    "-NoProfile",
+    "-NoExit",
+    "-Command",
+    command,
+  })
+
+  if is_valid_window(previous_window) then
+    vim.api.nvim_set_current_win(previous_window)
+  end
 end
 
 local function get_current_c_family_file(action_name)
@@ -110,15 +130,13 @@ local function refresh_compile_commands()
   end
   local build_dir = vim.fs.joinpath(cwd, "build-clangd")
 
-  send_to_build_terminal({
+  open_build_terminal({
     "$src = " .. ps_quote(cwd),
     "$build = " .. ps_quote(build_dir),
     "$cc = " .. ps_quote(c_compiler),
     "$cxx = " .. ps_quote(cpp_compiler),
-    'Write-Host ""',
     'Write-Host "Refreshing compile_commands.json ..." -ForegroundColor Cyan',
     "& cmake -S $src -B $build -G Ninja -DCMAKE_C_COMPILER=$cc -DCMAKE_CXX_COMPILER=$cxx -DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
-    'Write-Host ""',
   }, cwd)
 end
 
@@ -135,12 +153,10 @@ local function cmake_build_project()
 
   local build_dir = vim.fs.joinpath(cwd, "build-clangd")
 
-  send_to_build_terminal({
+  open_build_terminal({
     "$build = " .. ps_quote(build_dir),
-    'Write-Host ""',
     'Write-Host "Building CMake project ..." -ForegroundColor Cyan',
     "& cmake --build $build",
-    'Write-Host ""',
   }, cwd)
 end
 
@@ -152,14 +168,12 @@ local function build_current_file()
 
   vim.cmd.write()
 
-  send_to_build_terminal({
+  open_build_terminal({
     "$src = " .. ps_quote(file_info.source_path),
     "$out = " .. ps_quote(file_info.output_path),
     "$compiler = " .. ps_quote(cpp_compiler),
-    'Write-Host ""',
     'Write-Host "Compiling $src ..." -ForegroundColor Cyan',
     "& $compiler -std=c++20 -g $src -o $out",
-    'Write-Host ""',
   }, file_info.file_dir)
 end
 
@@ -169,16 +183,14 @@ local function run_current_file()
     return
   end
 
-  send_to_build_terminal({
+  open_build_terminal({
     "$out = " .. ps_quote(file_info.output_path),
-    'Write-Host ""',
     "if (Test-Path -LiteralPath $out) {",
     '  Write-Host "Running $out ..." -ForegroundColor Green',
     "  & $out",
     "} else {",
     '  Write-Host "Executable not found. Compile first with F5." -ForegroundColor Yellow',
     "}",
-    'Write-Host ""',
   }, file_info.file_dir)
 end
 
