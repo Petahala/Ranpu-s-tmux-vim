@@ -5,6 +5,7 @@ local options = {
   clipboard = "unnamedplus",
   cmdheight = 2,
   completeopt = { "menuone", "noselect" } ,
+  confirm = true,
   conceallevel = 0,
   fileencoding = "utf-8",
   hlsearch = true,
