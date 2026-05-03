@@ -1,5 +1,5 @@
 # Windows tmux + Neovim Dotfiles
-This repository stores the current Windows-focused `Neovim` and `tmux` configuration used on this machine.
+This repository stores the current Windows-focused `Neovim` and `tmux` configuration.
 
 This is not a generic Linux dotfiles repo. Some behavior is intentionally Windows-specific, especially:
 
