@@ -1,0 +1,88 @@
+Vim motions and deletes
+=======================
+
+This file documents built-in Vim motions that are useful in Neovim.
+These are not custom mappings from this repo. They are standard Vim operations.
+
+Basics
+- `h` : move left
+- `j` : move down
+- `k` : move up
+- `l` : move right
+
+Move by word
+- `w` : jump to the start of the next word
+- `b` : jump back to the start of the previous word
+- `e` : jump to the end of the current or next word
+- `W` / `B` / `E` : same idea, but treat punctuation more loosely and split only on whitespace
+
+Move in a line
+- `0` : jump to the start of the line
+- `^` : jump to the first non-space character of the line
+- `$` : jump to the end of the line
+
+Jump by line number
+- `gg` : jump to the first line of the file
+- `G` : jump to the last line of the file
+- `10G` : jump to line 10
+- `:10` : jump to line 10 using command-line mode
+
+Scroll and keep context
+- `Ctrl+d` : half-page down
+- `Ctrl+u` : half-page up
+- `Ctrl+f` : full page down
+- `Ctrl+b` : full page up
+
+Delete basics
+- `x` : delete the character under the cursor
+- `X` : delete the character before the cursor
+- `dw` : delete from cursor to the start of the next word
+- `de` : delete to the end of the word
+- `db` : delete backward to the start of the previous word
+- `d$` : delete from cursor to the end of the line
+- `d0` : delete from cursor to the start of the line
+- `D` : same as `d$`
+
+Delete whole lines
+- `dd` : delete the current line
+- `2dd` : delete 2 lines
+- `5dd` : delete 5 lines
+
+Delete larger ranges
+- `dG` : delete from cursor to the end of the file
+- `dgg` : delete from cursor to the top of the file
+- `ggdG` : delete the entire file contents
+- `:%d` : delete the entire file contents using command-line mode
+
+Change instead of delete
+- `cw` : change one word and enter insert mode
+- `cc` : change the whole current line and enter insert mode
+- `C` : change from cursor to end of line and enter insert mode
+
+Useful combinations
+- `diw` : delete inner word
+- `ciw` : change inner word
+- `di"` : delete inside double quotes
+- `ci"` : change inside double quotes
+- `di(` : delete inside parentheses
+- `ci(` : change inside parentheses
+
+Copy and paste related
+- `yy` : copy the current line
+- `p` : paste after the cursor
+- `P` : paste before the cursor
+
+Undo and redo
+- `u` : undo
+- `Ctrl+r` : redo
+
+Selection
+- `v` : start character-wise visual mode
+- `V` : start line-wise visual mode
+- `Ctrl+v` : start visual block mode
+
+Good starter workflow
+- Jump by word with `w`, `b`, `e`
+- Delete by motion with `d` plus a motion like `w`, `$`, `G`
+- Use `dd` for whole lines
+- Use `ggdG` or `:%d` when you really want to clear the whole file

@@ -22,6 +22,8 @@ This is not a generic Linux dotfiles repo. Some behavior is intentionally Window
   Current tmux config
 - `nvim_keys.txt`
   Practical Neovim key notes for this setup
+- `vim_motions_and_deletes.txt`
+  Basic built-in Vim movement and delete operations for Neovim use
 - `tmux_keys.txt`
   Practical tmux key notes for this setup
 - `WINDOWS_NOTES.md`
