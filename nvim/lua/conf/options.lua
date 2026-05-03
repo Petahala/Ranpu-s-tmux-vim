@@ -1,5 +1,6 @@
 local options = {
   backup = false,
+  autoread = true,
   background = "dark",
   clipboard = "unnamedplus",
   cmdheight = 2,
@@ -59,3 +60,17 @@ vim.cmd("autocmd BufEnter * set formatoptions-=cro")
 vim.cmd("autocmd BufEnter * setlocal formatoptions-=cro")
 
 vim.opt.shortmess:append "c"
+
+local autoread_group = vim.api.nvim_create_augroup("AutoReadExternalChanges", { clear = true })
+
+vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold", "CursorHoldI" }, {
+    group = autoread_group,
+    command = "if mode() != 'c' | checktime | endif",
+})
+
+vim.api.nvim_create_autocmd("FileChangedShellPost", {
+    group = autoread_group,
+    callback = function()
+        vim.notify("File changed on disk. Buffer reloaded.", vim.log.levels.INFO)
+    end,
+})

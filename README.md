@@ -30,6 +30,8 @@ This is not a generic Linux dotfiles repo. Some behavior is intentionally Window
   Practical tmux key notes for this setup
 - `WINDOWS_NOTES.md`
   Windows-specific notes for the Neovim setup
+- `CLANGD_NOTES.md`
+  Project-level `clangd` notes, including how to disable unused include warnings
 
 ## Restore these configs on Windows
 
@@ -52,4 +54,5 @@ to the place where you keep your active `tmux.conf`.
 
 - The Neovim config includes the current `tokyonight` theme setup.
 - The Neovim config includes current `clangd`, `pyright`, completion, and `F5`/`F6`/`F7` workflow settings.
+- The repo also includes a note for project-local `.clangd` settings such as disabling unused include warnings.
 - The tmux config uses `Ctrl+w` as prefix instead of the default `Ctrl+b`.
