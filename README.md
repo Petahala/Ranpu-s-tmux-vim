@@ -24,6 +24,8 @@ This is not a generic Linux dotfiles repo. Some behavior is intentionally Window
   Practical Neovim key notes for this setup
 - `vim_motions_and_deletes.txt`
   Basic built-in Vim movement and delete operations for Neovim use
+- `vim_search_replace_copy_paste_undo.txt`
+  Basic built-in Vim search, replace, copy, paste, undo, and redo operations
 - `tmux_keys.txt`
   Practical tmux key notes for this setup
 - `WINDOWS_NOTES.md`

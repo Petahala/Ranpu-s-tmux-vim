@@ -1,0 +1,89 @@
+Vim search, replace, copy, paste, undo
+=======================================
+
+This file documents built-in Vim operations that are useful in Neovim.
+These are standard Vim features, not custom mappings from this repo.
+
+Search
+- `/text` : search forward for `text`
+- `?text` : search backward for `text`
+- `n` : jump to the next search result
+- `N` : jump to the previous search result
+- `*` : search forward for the word under the cursor
+- `#` : search backward for the word under the cursor
+
+Search tips
+- `/main` then Enter : find the next `main`
+- `n` / `N` : keep moving through matches
+- `:noh` : clear search highlighting
+
+Replace basics
+- `:s/old/new/` : replace the first `old` with `new` on the current line
+- `:s/old/new/g` : replace all `old` with `new` on the current line
+- `:%s/old/new/g` : replace all `old` with `new` in the whole file
+- `:%s/old/new/gc` : replace across the whole file and confirm each match
+
+Replace in ranges
+- `:10,20s/old/new/g` : replace from line 10 to line 20
+- `:'<,'>s/old/new/g` : replace inside the current visual selection
+
+Replace confirmation keys
+- `y` : apply this replacement
+- `n` : skip this replacement
+- `a` : apply this and all remaining replacements
+- `q` : stop replacing
+
+Copy and yank
+- `yy` : copy the current line
+- `2yy` : copy 2 lines
+- `yw` : copy one word forward
+- `y$` : copy from cursor to end of line
+- `yiw` : copy inner word
+- `yip` : copy inner paragraph
+
+Paste
+- `p` : paste after the cursor
+- `P` : paste before the cursor
+- In normal text editing, `p` is the more common default
+- In visual mode in this config, `p` pastes without overwriting the unnamed register
+
+Useful copy and paste flow
+- `yy` then `p` : duplicate the current line below
+- `2yy` then `p` : duplicate 2 lines below
+- `yiw` then `p` : copy the current word and paste it after the cursor
+
+Undo and redo
+- `u` : undo one change
+- `Ctrl+r` : redo one undone change
+
+Repeat
+- `.` : repeat the last change
+
+Examples
+- `dw` then `.` : delete one word, then repeat that delete
+- `x` then `.` : delete more characters one by one with repeat
+
+Visual mode
+- `v` : character-wise visual mode
+- `V` : line-wise visual mode
+- `Ctrl+v` : block-wise visual mode
+
+Visual mode examples
+- `V` then `j` then `y` : select lines and copy them
+- `v` then move, then `d` : delete the selected text
+- `v` then move, then `y` : copy the selected text
+
+Registers
+- Vim stores deleted and copied text in registers
+- Most of the time you can just use `yy`, `dd`, `p`, `P`
+- If you want to paste from the system clipboard explicitly, you can use `"+p`
+
+Good starter workflow
+- Search with `/`
+- Jump with `n` and `N`
+- Replace with `:%s/old/new/gc` when you want control
+- Copy lines with `yy`
+- Paste with `p`
+- Undo with `u`
+- Redo with `Ctrl+r`
+- Repeat your last edit with `.`
