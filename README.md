@@ -53,6 +53,6 @@ to the place where you keep your active `tmux.conf`.
 ## Notes
 
 - The Neovim config includes the current `tokyonight` theme setup.
-- The Neovim config includes current `clangd`, `pyright`, completion, and `F5`/`F6`/`F7` workflow settings.
+- The Neovim config includes current `clangd`, `pyright`, completion, and `F5`/`F6`/`F7`/`F8` workflow settings.
 - The repo also includes a note for project-local `.clangd` settings such as disabling unused include warnings.
 - The tmux config uses `Ctrl+w` as prefix instead of the default `Ctrl+b`.

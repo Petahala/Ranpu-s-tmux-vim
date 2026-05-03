@@ -34,9 +34,11 @@ Scrolling
 - Ctrl+u : half-page up and keep cursor centered
 
 Build / run
-- F5 : save current C/C++ file, compile it with Windows g++, press Enter to run, press Enter again to return
-- F6 : refresh build-clangd/compile_commands.json with CMake
+- F5 : save current C/C++ file and compile it with Windows g++
+- F6 : run the current file's matching .exe in the persistent build terminal
 - F7 : build current CMake project in build-clangd
+- F8 : refresh build-clangd/compile_commands.json with CMake
+- F5 / F6 / F7 / F8 all use the same persistent bottom PowerShell terminal pane
 
 LSP / diagnostics
 - K       : hover documentation
@@ -74,6 +76,13 @@ Terminal inside Neovim
 - Ctrl+j : move to lower split from terminal mode
 - Ctrl+k : move to upper split from terminal mode
 - Ctrl+l : move to right split from terminal mode
+- Ctrl+\ then Ctrl+n : leave terminal input mode and return to normal mode
+
+Split / panel commands
+- :sp or Ctrl+w s : split horizontally
+- :vs or Ctrl+w v : split vertically
+- :close or Ctrl+w c : close current split / panel
+- :only or Ctrl+w o : keep only the current split / panel
 
 Editing helpers
 - Q : disabled

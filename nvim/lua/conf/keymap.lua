@@ -11,6 +11,94 @@ end
 
 local cpp_compiler = "D:\\programs\\mingw\\bin\\g++.exe"
 local c_compiler = "D:\\programs\\mingw\\bin\\gcc.exe"
+local build_terminal = {
+  buf = nil,
+  win = nil,
+  job = nil,
+}
+
+local function ensure_build_terminal()
+  if build_terminal.buf and vim.api.nvim_buf_is_valid(build_terminal.buf) then
+    build_terminal.job = vim.b[build_terminal.buf].terminal_job_id or build_terminal.job
+  end
+
+  if build_terminal.buf and vim.api.nvim_buf_is_valid(build_terminal.buf) and build_terminal.win and vim.api.nvim_win_is_valid(build_terminal.win) then
+    return build_terminal.buf, build_terminal.win, build_terminal.job
+  end
+
+  local previous_window = vim.api.nvim_get_current_win()
+
+  vim.cmd("botright 12split")
+  build_terminal.win = vim.api.nvim_get_current_win()
+
+  if build_terminal.buf and vim.api.nvim_buf_is_valid(build_terminal.buf) then
+    vim.api.nvim_win_set_buf(build_terminal.win, build_terminal.buf)
+  else
+    build_terminal.buf = vim.api.nvim_create_buf(false, true)
+    vim.api.nvim_win_set_buf(build_terminal.win, build_terminal.buf)
+    vim.bo[build_terminal.buf].bufhidden = "hide"
+    build_terminal.job = vim.fn.termopen({
+      "powershell",
+      "-NoLogo",
+      "-NoProfile",
+    })
+    vim.api.nvim_buf_set_name(build_terminal.buf, "Build Terminal")
+  end
+
+  if vim.api.nvim_win_is_valid(previous_window) then
+    vim.api.nvim_set_current_win(previous_window)
+  end
+
+  return build_terminal.buf, build_terminal.win, build_terminal.job
+end
+
+local function send_to_build_terminal(lines, cwd)
+  local _, _, job = ensure_build_terminal()
+
+  if not job then
+    vim.notify("Build terminal is not available.", vim.log.levels.ERROR)
+    return
+  end
+
+  local command = table.concat({
+    "$Host.UI.RawUI.WindowTitle = 'Build Terminal'",
+    "$ErrorActionPreference = 'Continue'",
+    "Set-Location -LiteralPath " .. ps_quote(cwd),
+    unpack(lines),
+  }, "\r\n")
+
+  vim.api.nvim_chan_send(job, command .. "\r\n")
+end
+
+local function get_current_c_family_file(action_name)
+  local mode = vim.api.nvim_get_mode().mode
+  if mode:sub(1, 1) == "i" then
+    vim.cmd.stopinsert()
+  end
+
+  local file = vim.api.nvim_buf_get_name(0)
+  if file == "" then
+    vim.notify("Current buffer has no file path.", vim.log.levels.WARN)
+    return nil
+  end
+
+  local ext = vim.fn.fnamemodify(file, ":e"):lower()
+  if not vim.tbl_contains({ "c", "cc", "cpp", "cxx" }, ext) then
+    vim.notify(action_name .. " is only configured for C/C++ files.", vim.log.levels.WARN)
+    return nil
+  end
+
+  local source_path = vim.fn.fnamemodify(file, ":p")
+  local file_dir = vim.fn.fnamemodify(source_path, ":h")
+  local file_stem = vim.fn.fnamemodify(source_path, ":t:r")
+  local output_path = file_dir .. "\\" .. file_stem .. ".exe"
+
+  return {
+    source_path = source_path,
+    file_dir = file_dir,
+    output_path = output_path,
+  }
+end
 
 local function refresh_compile_commands()
   local cwd = vim.fn.getcwd()
@@ -20,50 +108,18 @@ local function refresh_compile_commands()
     vim.notify("No CMakeLists.txt found in current working directory.", vim.log.levels.WARN)
     return
   end
-
-  local previous_window = vim.api.nvim_get_current_win()
   local build_dir = vim.fs.joinpath(cwd, "build-clangd")
 
-  vim.cmd("botright 12split")
-  local terminal_window = vim.api.nvim_get_current_win()
-  local terminal_buffer = vim.api.nvim_create_buf(false, true)
-  vim.api.nvim_win_set_buf(terminal_window, terminal_buffer)
-  vim.bo[terminal_buffer].bufhidden = "wipe"
-
-  local command = table.concat({
+  send_to_build_terminal({
     "$src = " .. ps_quote(cwd),
     "$build = " .. ps_quote(build_dir),
     "$cc = " .. ps_quote(c_compiler),
     "$cxx = " .. ps_quote(cpp_compiler),
+    'Write-Host ""',
     'Write-Host "Refreshing compile_commands.json ..." -ForegroundColor Cyan',
     "& cmake -S $src -B $build -G Ninja -DCMAKE_C_COMPILER=$cc -DCMAKE_CXX_COMPILER=$cxx -DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
-    "$exitCode = $LASTEXITCODE",
     'Write-Host ""',
-    'Read-Host "Done. Press Enter to return" | Out-Null',
-    "exit $exitCode",
-  }, "\n")
-
-  vim.fn.termopen({
-    "powershell",
-    "-NoLogo",
-    "-NoProfile",
-    "-Command",
-    command,
-  }, {
-    cwd = cwd,
-    on_exit = function()
-      vim.schedule(function()
-        if vim.api.nvim_win_is_valid(terminal_window) then
-          vim.api.nvim_win_close(terminal_window, true)
-        end
-        if vim.api.nvim_win_is_valid(previous_window) then
-          vim.api.nvim_set_current_win(previous_window)
-        end
-      end)
-    end,
-  })
-
-  vim.cmd.startinsert()
+  }, cwd)
 end
 
 local function cmake_build_project()
@@ -77,122 +133,53 @@ local function cmake_build_project()
 
   vim.cmd.write()
 
-  local previous_window = vim.api.nvim_get_current_win()
   local build_dir = vim.fs.joinpath(cwd, "build-clangd")
 
-  vim.cmd("botright 12split")
-  local terminal_window = vim.api.nvim_get_current_win()
-  local terminal_buffer = vim.api.nvim_create_buf(false, true)
-  vim.api.nvim_win_set_buf(terminal_window, terminal_buffer)
-  vim.bo[terminal_buffer].bufhidden = "wipe"
-
-  local command = table.concat({
+  send_to_build_terminal({
     "$build = " .. ps_quote(build_dir),
+    'Write-Host ""',
     'Write-Host "Building CMake project ..." -ForegroundColor Cyan',
     "& cmake --build $build",
-    "$exitCode = $LASTEXITCODE",
     'Write-Host ""',
-    'Read-Host "Build finished. Press Enter to return" | Out-Null',
-    "exit $exitCode",
-  }, "\n")
-
-  vim.fn.termopen({
-    "powershell",
-    "-NoLogo",
-    "-NoProfile",
-    "-Command",
-    command,
-  }, {
-    cwd = cwd,
-    on_exit = function()
-      vim.schedule(function()
-        if vim.api.nvim_win_is_valid(terminal_window) then
-          vim.api.nvim_win_close(terminal_window, true)
-        end
-        if vim.api.nvim_win_is_valid(previous_window) then
-          vim.api.nvim_set_current_win(previous_window)
-        end
-      end)
-    end,
-  })
-
-  vim.cmd.startinsert()
+  }, cwd)
 end
 
-local function build_and_run_current_file()
-  local mode = vim.api.nvim_get_mode().mode
-  if mode:sub(1, 1) == "i" then
-    vim.cmd.stopinsert()
-  end
-
-  local file = vim.api.nvim_buf_get_name(0)
-  if file == "" then
-    vim.notify("Current buffer has no file path.", vim.log.levels.WARN)
-    return
-  end
-
-  local ext = vim.fn.fnamemodify(file, ":e"):lower()
-  if not vim.tbl_contains({ "c", "cc", "cpp", "cxx" }, ext) then
-    vim.notify("F5 build-run is only configured for C/C++ files.", vim.log.levels.WARN)
+local function build_current_file()
+  local file_info = get_current_c_family_file("F5 compile")
+  if not file_info then
     return
   end
 
   vim.cmd.write()
 
-  local source_path = vim.fn.fnamemodify(file, ":p")
-  local file_dir = vim.fn.fnamemodify(source_path, ":h")
-  local file_stem = vim.fn.fnamemodify(source_path, ":t:r")
-  local output_path = file_dir .. "\\" .. file_stem .. ".exe"
-  local previous_window = vim.api.nvim_get_current_win()
-
-  vim.cmd("botright 12split")
-  local terminal_window = vim.api.nvim_get_current_win()
-  local terminal_buffer = vim.api.nvim_create_buf(false, true)
-  vim.api.nvim_win_set_buf(terminal_window, terminal_buffer)
-  vim.bo[terminal_buffer].bufhidden = "wipe"
-
-  local command = table.concat({
-    "$src = " .. ps_quote(source_path),
-    "$out = " .. ps_quote(output_path),
+  send_to_build_terminal({
+    "$src = " .. ps_quote(file_info.source_path),
+    "$out = " .. ps_quote(file_info.output_path),
     "$compiler = " .. ps_quote(cpp_compiler),
+    'Write-Host ""',
     'Write-Host "Compiling $src ..." -ForegroundColor Cyan',
     "& $compiler -std=c++20 -g $src -o $out",
-    "if ($LASTEXITCODE -ne 0) {",
-    '  Write-Host ""',
-    '  Read-Host "Build failed. Press Enter to return" | Out-Null',
-    "  exit $LASTEXITCODE",
+    'Write-Host ""',
+  }, file_info.file_dir)
+end
+
+local function run_current_file()
+  local file_info = get_current_c_family_file("F6 run")
+  if not file_info then
+    return
+  end
+
+  send_to_build_terminal({
+    "$out = " .. ps_quote(file_info.output_path),
+    'Write-Host ""',
+    "if (Test-Path -LiteralPath $out) {",
+    '  Write-Host "Running $out ..." -ForegroundColor Green',
+    "  & $out",
+    "} else {",
+    '  Write-Host "Executable not found. Compile first with F5." -ForegroundColor Yellow',
     "}",
     'Write-Host ""',
-    'Read-Host "Build succeeded. Press Enter to run" | Out-Null',
-    'Write-Host ""',
-    "& $out",
-    "$exitCode = $LASTEXITCODE",
-    'Write-Host ""',
-    'Read-Host "Program finished. Press Enter to return" | Out-Null',
-    "exit $exitCode",
-  }, "\n")
-
-  vim.fn.termopen({
-    "powershell",
-    "-NoLogo",
-    "-NoProfile",
-    "-Command",
-    command,
-  }, {
-    cwd = file_dir,
-    on_exit = function()
-      vim.schedule(function()
-        if vim.api.nvim_win_is_valid(terminal_window) then
-          vim.api.nvim_win_close(terminal_window, true)
-        end
-        if vim.api.nvim_win_is_valid(previous_window) then
-          vim.api.nvim_set_current_win(previous_window)
-        end
-      end)
-    end,
-  })
-
-  vim.cmd.startinsert()
+  }, file_info.file_dir)
 end
 
 --Remap space as leader key
@@ -261,11 +248,15 @@ keymap("t", "<C-j>", "<C-\\><C-N><C-w>j", term_opts)
 keymap("t", "<C-k>", "<C-\\><C-N><C-w>k", term_opts)
 keymap("t", "<C-l>", "<C-\\><C-N><C-w>l", term_opts)
 vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", { silent = true })
-vim.keymap.set({ "n", "i" }, "<F5>", build_and_run_current_file, {
+vim.keymap.set({ "n", "i" }, "<F5>", build_current_file, {
   silent = true,
-  desc = "Build and run current C/C++ file",
+  desc = "Compile current C/C++ file",
 })
-vim.keymap.set("n", "<F6>", refresh_compile_commands, {
+vim.keymap.set({ "n", "i" }, "<F6>", run_current_file, {
+  silent = true,
+  desc = "Run current C/C++ executable",
+})
+vim.keymap.set("n", "<F8>", refresh_compile_commands, {
   silent = true,
   desc = "Refresh compile_commands.json with CMake",
 })

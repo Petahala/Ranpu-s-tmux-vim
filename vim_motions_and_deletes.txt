@@ -81,6 +81,12 @@ Selection
 - `V` : start line-wise visual mode
 - `Ctrl+v` : start visual block mode
 
+Windows / panels
+- `:sp` or `Ctrl+w s` : split horizontally
+- `:vs` or `Ctrl+w v` : split vertically
+- `:close` or `Ctrl+w c` : close the current split / panel
+- `:only` or `Ctrl+w o` : keep only the current split / panel
+
 Good starter workflow
 - Jump by word with `w`, `b`, `e`
 - Delete by motion with `d` plus a motion like `w`, `$`, `G`
