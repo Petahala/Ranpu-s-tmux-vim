@@ -28,6 +28,8 @@ Buffers
 
 File tree
 - Space e : toggle NvimTree
+- Space y p : copy current file full path to Windows clipboard
+- Space y d : copy current file directory to Windows clipboard
 
 Scrolling
 - Ctrl+d : half-page down and keep cursor centered

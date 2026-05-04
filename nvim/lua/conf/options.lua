@@ -66,7 +66,12 @@ local autoread_group = vim.api.nvim_create_augroup("AutoReadExternalChanges", { 
 
 vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold", "CursorHoldI" }, {
     group = autoread_group,
-    command = "if mode() != 'c' | checktime | endif",
+    callback = function()
+        if vim.fn.getcmdwintype() ~= "" or vim.fn.mode() == "c" then
+            return
+        end
+        vim.cmd("silent! checktime")
+    end,
 })
 
 vim.api.nvim_create_autocmd("FileChangedShellPost", {

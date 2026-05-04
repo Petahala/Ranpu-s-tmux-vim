@@ -120,6 +120,30 @@ local function get_current_c_family_file(action_name)
   }
 end
 
+local function copy_current_file_path()
+  local file = vim.api.nvim_buf_get_name(0)
+  if file == "" then
+    vim.notify("Current buffer has no file path.", vim.log.levels.WARN)
+    return
+  end
+
+  local full_path = vim.fn.fnamemodify(file, ":p")
+  vim.fn.setreg("+", full_path)
+  vim.notify("Copied file path: " .. full_path, vim.log.levels.INFO)
+end
+
+local function copy_current_file_directory()
+  local file = vim.api.nvim_buf_get_name(0)
+  if file == "" then
+    vim.notify("Current buffer has no file path.", vim.log.levels.WARN)
+    return
+  end
+
+  local dir_path = vim.fn.fnamemodify(file, ":p:h")
+  vim.fn.setreg("+", dir_path)
+  vim.notify("Copied file directory: " .. dir_path, vim.log.levels.INFO)
+end
+
 local function refresh_compile_commands()
   local cwd = vim.fn.getcwd()
   local cmake_file = vim.fs.joinpath(cwd, "CMakeLists.txt")
@@ -260,6 +284,14 @@ keymap("t", "<C-j>", "<C-\\><C-N><C-w>j", term_opts)
 keymap("t", "<C-k>", "<C-\\><C-N><C-w>k", term_opts)
 keymap("t", "<C-l>", "<C-\\><C-N><C-w>l", term_opts)
 vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", { silent = true })
+vim.keymap.set("n", "<leader>yp", copy_current_file_path, {
+  silent = true,
+  desc = "Copy current file path",
+})
+vim.keymap.set("n", "<leader>yd", copy_current_file_directory, {
+  silent = true,
+  desc = "Copy current file directory",
+})
 vim.keymap.set({ "n", "i" }, "<F5>", build_current_file, {
   silent = true,
   desc = "Compile current C/C++ file",
