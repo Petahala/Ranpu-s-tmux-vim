@@ -28,6 +28,9 @@ Buffers
 
 File tree
 - Space e : toggle NvimTree
+- Space t t : open terminal in current file directory
+- Space t s : open horizontal terminal split in current file directory
+- Space t v : open vertical terminal split in current file directory
 - Space y p : copy current file full path to Windows clipboard
 - Space y d : copy current file directory to Windows clipboard
 
@@ -75,6 +78,10 @@ Completion
 - Ctrl+e     : cancel completion
 
 Terminal inside Neovim
+- :terminal : open terminal in the current file directory
+- :TerminalHere : explicit current-file-directory terminal
+- :STerminalHere : horizontal split terminal in the current file directory
+- :VTerminalHere : vertical split terminal in the current file directory
 - jk : leave terminal input mode and stay in the terminal window
 - Ctrl+h : move to left split from terminal mode
 - Ctrl+j : move to lower split from terminal mode

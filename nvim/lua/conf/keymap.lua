@@ -17,6 +17,18 @@ local build_terminal = {
   job = nil,
 }
 
+local function current_buffer_directory()
+  local file = vim.api.nvim_buf_get_name(0)
+  if file ~= "" then
+    local dir = vim.fn.fnamemodify(file, ":p:h")
+    if vim.fn.isdirectory(dir) == 1 then
+      return dir
+    end
+  end
+
+  return vim.fn.getcwd()
+end
+
 local function is_valid_window(win)
   return type(win) == "number" and win > 0 and pcall(vim.api.nvim_win_get_buf, win)
 end
@@ -142,6 +154,22 @@ local function copy_current_file_directory()
   local dir_path = vim.fn.fnamemodify(file, ":p:h")
   vim.fn.setreg("+", dir_path)
   vim.notify("Copied file directory: " .. dir_path, vim.log.levels.INFO)
+end
+
+local function open_terminal_here(split_cmd, args)
+  local cwd = current_buffer_directory()
+
+  if split_cmd then
+    vim.cmd(split_cmd)
+  end
+
+  local command = vim.trim(args or "")
+  if command == "" then
+    command = vim.o.shell
+  end
+
+  vim.fn.termopen(command, { cwd = cwd })
+  vim.cmd.startinsert()
 end
 
 local function refresh_compile_commands()
@@ -284,7 +312,51 @@ keymap("t", "<C-h>", "<C-\\><C-N><C-w>h", term_opts)
 keymap("t", "<C-j>", "<C-\\><C-N><C-w>j", term_opts)
 keymap("t", "<C-k>", "<C-\\><C-N><C-w>k", term_opts)
 keymap("t", "<C-l>", "<C-\\><C-N><C-w>l", term_opts)
+
+vim.api.nvim_create_user_command("TerminalHere", function(command_opts)
+  open_terminal_here(nil, command_opts.args)
+end, {
+  nargs = "*",
+  complete = "shellcmd",
+  desc = "Open terminal in the current file directory",
+})
+
+vim.api.nvim_create_user_command("STerminalHere", function(command_opts)
+  open_terminal_here("split", command_opts.args)
+end, {
+  nargs = "*",
+  complete = "shellcmd",
+  desc = "Open horizontal terminal split in the current file directory",
+})
+
+vim.api.nvim_create_user_command("VTerminalHere", function(command_opts)
+  open_terminal_here("vsplit", command_opts.args)
+end, {
+  nargs = "*",
+  complete = "shellcmd",
+  desc = "Open vertical terminal split in the current file directory",
+})
+
+vim.cmd([[
+  cnoreabbrev <expr> terminal getcmdtype() == ':' && getcmdline() =~# '^terminal\%($\| \)' ? 'TerminalHere' : 'terminal'
+]])
+vim.cmd([[
+  cnoreabbrev <expr> term getcmdtype() == ':' && getcmdline() =~# '^term\%($\| \)' ? 'TerminalHere' : 'term'
+]])
+
 vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", { silent = true })
+vim.keymap.set("n", "<leader>tt", "<Cmd>TerminalHere<CR>", {
+  silent = true,
+  desc = "Open terminal in current file directory",
+})
+vim.keymap.set("n", "<leader>ts", "<Cmd>STerminalHere<CR>", {
+  silent = true,
+  desc = "Open horizontal terminal split in current file directory",
+})
+vim.keymap.set("n", "<leader>tv", "<Cmd>VTerminalHere<CR>", {
+  silent = true,
+  desc = "Open vertical terminal split in current file directory",
+})
 vim.keymap.set("n", "<leader>yp", copy_current_file_path, {
   silent = true,
   desc = "Copy current file path",

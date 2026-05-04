@@ -7,12 +7,14 @@ Environment
 - Active config path on Windows: C:\Users\A\AppData\Local\nvim
 
 Open terminal inside Neovim
-- :terminal : open a terminal in the current window
-- :sp | terminal : split horizontally, then open a terminal
-- :vs | terminal : split vertically, then open a terminal
-- :terminal powershell : open a PowerShell terminal explicitly
-- :sp | terminal powershell : horizontal split with PowerShell
-- :vs | terminal powershell : vertical split with PowerShell
+- :terminal : open a terminal in the current file's directory
+- :terminal powershell : open a PowerShell terminal in the current file's directory
+- :TerminalHere : explicit version of :terminal, also opens in the current file's directory
+- :STerminalHere : horizontal split terminal in the current file's directory
+- :VTerminalHere : vertical split terminal in the current file's directory
+- Space t t : open terminal in the current file's directory
+- Space t s : horizontal terminal split in the current file's directory
+- Space t v : vertical terminal split in the current file's directory
 
 Split windows
 - :sp or Ctrl+w s : split horizontally
