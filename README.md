@@ -71,6 +71,7 @@ to:
 
 - The Neovim config includes the current `tokyonight` theme setup.
 - The Neovim config includes current `clangd`, `pyright`, completion, and `F5`/`F6`/`F7`/`F8` workflow settings.
+- In this setup, `:terminal` / `:term` are redirected to open from the current file directory by default.
 - The repo includes the current Windows Terminal font/rendering settings snapshot.
 - The repo also includes a note for project-local `.clangd` settings such as disabling unused include warnings.
 - The tmux config uses `Ctrl+w` as prefix instead of the default `Ctrl+b`.

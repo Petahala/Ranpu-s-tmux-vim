@@ -7,7 +7,7 @@ Environment
 - Active config path on Windows: C:\Users\A\AppData\Local\nvim
 
 Open terminal inside Neovim
-- :terminal : open a terminal in the current file's directory
+- :terminal / :term : open a terminal in the current file's directory by default
 - :terminal powershell : open a PowerShell terminal in the current file's directory
 - :TerminalHere : explicit version of :terminal, also opens in the current file's directory
 - :STerminalHere : horizontal split terminal in the current file's directory

@@ -78,7 +78,7 @@ Completion
 - Ctrl+e     : cancel completion
 
 Terminal inside Neovim
-- :terminal : open terminal in the current file directory
+- :terminal / :term : open terminal in the current file directory by default
 - :TerminalHere : explicit current-file-directory terminal
 - :STerminalHere : horizontal split terminal in the current file directory
 - :VTerminalHere : vertical split terminal in the current file directory
