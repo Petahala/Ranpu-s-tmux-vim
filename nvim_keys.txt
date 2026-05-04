@@ -82,6 +82,10 @@ Terminal inside Neovim
 - :TerminalHere : explicit current-file-directory terminal
 - :STerminalHere : horizontal split terminal in the current file directory
 - :VTerminalHere : vertical split terminal in the current file directory
+- :ReloadKeys : reload keymap.lua
+- :ReloadOptions : reload options.lua
+- :ReloadTree : reload nvim-tree config
+- :ReloadConfig : reload core config files
 - jk : leave terminal input mode and stay in the terminal window
 - Ctrl+h : move to left split from terminal mode
 - Ctrl+j : move to lower split from terminal mode

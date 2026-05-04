@@ -12,6 +12,10 @@ Open terminal inside Neovim
 - :TerminalHere : explicit version of :terminal, also opens in the current file's directory
 - :STerminalHere : horizontal split terminal in the current file's directory
 - :VTerminalHere : vertical split terminal in the current file's directory
+- :ReloadKeys : reload keymap.lua
+- :ReloadOptions : reload options.lua
+- :ReloadTree : reload nvim-tree config
+- :ReloadConfig : reload core config files
 - Space t t : open terminal in the current file's directory
 - Space t s : horizontal terminal split in the current file's directory
 - Space t v : vertical terminal split in the current file's directory

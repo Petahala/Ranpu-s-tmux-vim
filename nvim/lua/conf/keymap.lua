@@ -9,6 +9,24 @@ local function ps_quote(value)
   return "'" .. value:gsub("'", "''") .. "'"
 end
 
+local function upsert_user_command(name, command, opts)
+  pcall(vim.api.nvim_del_user_command, name)
+  vim.api.nvim_create_user_command(name, command, opts or {})
+end
+
+local function reload_lua_file(path, label)
+  vim.cmd("luafile " .. vim.fn.fnameescape(path))
+  if label then
+    vim.notify("Reloaded " .. label, vim.log.levels.INFO)
+  end
+end
+
+local config_root = vim.fn.stdpath("config")
+local keymap_file = config_root .. "/lua/conf/keymap.lua"
+local options_file = config_root .. "/lua/conf/options.lua"
+local tree_file = config_root .. "/lua/conf/plugins/tree.lua"
+local neovide_file = config_root .. "/lua/conf/neovide.lua"
+
 local cpp_compiler = "D:\\programs\\mingw\\bin\\g++.exe"
 local c_compiler = "D:\\programs\\mingw\\bin\\gcc.exe"
 local build_terminal = {
@@ -313,7 +331,7 @@ keymap("t", "<C-j>", "<C-\\><C-N><C-w>j", term_opts)
 keymap("t", "<C-k>", "<C-\\><C-N><C-w>k", term_opts)
 keymap("t", "<C-l>", "<C-\\><C-N><C-w>l", term_opts)
 
-vim.api.nvim_create_user_command("TerminalHere", function(command_opts)
+upsert_user_command("TerminalHere", function(command_opts)
   open_terminal_here(nil, command_opts.args)
 end, {
   nargs = "*",
@@ -321,7 +339,7 @@ end, {
   desc = "Open terminal in the current file directory",
 })
 
-vim.api.nvim_create_user_command("STerminalHere", function(command_opts)
+upsert_user_command("STerminalHere", function(command_opts)
   open_terminal_here("split", command_opts.args)
 end, {
   nargs = "*",
@@ -329,12 +347,42 @@ end, {
   desc = "Open horizontal terminal split in the current file directory",
 })
 
-vim.api.nvim_create_user_command("VTerminalHere", function(command_opts)
+upsert_user_command("VTerminalHere", function(command_opts)
   open_terminal_here("vsplit", command_opts.args)
 end, {
   nargs = "*",
   complete = "shellcmd",
   desc = "Open vertical terminal split in the current file directory",
+})
+
+upsert_user_command("ReloadKeys", function()
+  reload_lua_file(keymap_file, "keymap.lua")
+end, {
+  desc = "Reload keymap configuration",
+})
+
+upsert_user_command("ReloadOptions", function()
+  reload_lua_file(options_file, "options.lua")
+end, {
+  desc = "Reload options configuration",
+})
+
+upsert_user_command("ReloadTree", function()
+  reload_lua_file(tree_file, "tree.lua")
+end, {
+  desc = "Reload nvim-tree configuration",
+})
+
+upsert_user_command("ReloadConfig", function()
+  reload_lua_file(options_file, "options.lua")
+  reload_lua_file(tree_file, "tree.lua")
+  if vim.g.neovide then
+    reload_lua_file(neovide_file, "neovide.lua")
+  end
+  reload_lua_file(keymap_file, "keymap.lua")
+  vim.notify("Reloaded core Neovim config", vim.log.levels.INFO)
+end, {
+  desc = "Reload core Neovim configuration files",
 })
 
 vim.cmd([[
