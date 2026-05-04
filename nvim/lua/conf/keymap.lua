@@ -181,6 +181,8 @@ local function open_terminal_here(split_cmd, args)
     vim.cmd(split_cmd)
   end
 
+  vim.cmd("hide enew")
+
   local command = vim.trim(args or "")
   if command == "" then
     command = vim.o.shell
