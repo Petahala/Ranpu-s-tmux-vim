@@ -387,12 +387,10 @@ end, {
   desc = "Reload core Neovim configuration files",
 })
 
-vim.cmd([[
-  cnoreabbrev <expr> terminal getcmdtype() == ':' && getcmdline() =~# '^terminal\%($\| \)' ? 'TerminalHere' : 'terminal'
-]])
-vim.cmd([[
-  cnoreabbrev <expr> term getcmdtype() == ':' && getcmdline() =~# '^term\%($\| \)' ? 'TerminalHere' : 'term'
-]])
+vim.cmd("silent! cunabbrev terminal")
+vim.cmd("silent! cunabbrev term")
+vim.cmd("cnoreabbrev terminal TerminalHere")
+vim.cmd("cnoreabbrev term TerminalHere")
 
 vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", { silent = true })
 vim.keymap.set("n", "<leader>tt", "<Cmd>TerminalHere<CR>", {
