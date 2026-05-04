@@ -75,6 +75,7 @@ Completion
 - Ctrl+e     : cancel completion
 
 Terminal inside Neovim
+- jk : leave terminal input mode and stay in the terminal window
 - Ctrl+h : move to left split from terminal mode
 - Ctrl+j : move to lower split from terminal mode
 - Ctrl+k : move to upper split from terminal mode
