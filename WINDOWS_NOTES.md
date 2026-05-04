@@ -23,9 +23,10 @@ Several workflow functions in `nvim/lua/conf/keymap.lua` explicitly use:
 
 This affects:
 
-- `F5` single-file C/C++ build and run
-- `F6` refreshing `build-clangd/compile_commands.json`
+- `F5` single-file C/C++ compile
+- `F6` running the current file's matching `.exe`
 - `F7` building the CMake project
+- `F8` refreshing `build-clangd/compile_commands.json`
 
 These commands are currently written for Windows PowerShell syntax, including:
 
@@ -53,7 +54,7 @@ The `F5` workflow builds the current file into:
 
 `<current_file_stem>.exe`
 
-and then runs that `.exe` directly.
+The `F6` workflow then runs that `.exe` directly in the dedicated build terminal pane.
 
 That is Windows-specific in two ways:
 
@@ -80,13 +81,35 @@ In `nvim/lua/conf/options.lua`, clipboard is set to:
 
 On this machine that means Neovim uses the Windows system clipboard.
 
-## GUI font
+## Neovide GUI font
 
 The current GUI font is set in `nvim/lua/conf/options.lua`:
 
 `Consolas:h11`
 
-This was chosen because `JetBrainsMono Nerd Font` was not available in the active GUI environment at the time.
+This is independent from terminal font settings. `Neovide` uses `guifont`, not the Windows Terminal font stack.
+
+## Windows Terminal font
+
+The current Windows Terminal settings are stored in:
+
+`windows_terminal.settings.json`
+
+The active terminal font is configured as:
+
+`JetBrainsMono NF`
+
+This matters for:
+
+- `lualine` glyphs
+- `nvim-web-devicons`
+- other Nerd Font / powerline-style symbols in terminal Neovim
+
+If terminal-side icons become corrupted again, check the live Windows Terminal file at:
+
+`C:\Users\A\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json`
+
+and confirm the `profiles.defaults.font.face` entry still matches the expected Nerd Font.
 
 ## Neovide notes
 
@@ -107,7 +130,7 @@ Current Windows GUI-specific behavior includes:
 
 ## CMake workflow assumptions
 
-The `F6` and `F7` workflow assumes a build directory named:
+The `F7` and `F8` workflow assumes a build directory named:
 
 `build-clangd`
 

@@ -6,6 +6,7 @@ This is not a generic Linux dotfiles repo. Some behavior is intentionally Window
 - `Neovim` lives under `C:\Users\A\AppData\Local\nvim`
 - C/C++ build commands use Windows paths and PowerShell
 - `tmux` copy mode sends text to the Windows clipboard through `clip.exe`
+- `Windows Terminal` uses a Nerd Font configuration for terminal-side icons and statusline glyphs
 
 ## Current install locations
 
@@ -20,6 +21,8 @@ This is not a generic Linux dotfiles repo. Some behavior is intentionally Window
   Active Neovim config copied from the Windows Neovim config directory
 - `tmux/tmux.conf`
   Current tmux config
+- `windows_terminal.settings.json`
+  Snapshot of the current Windows Terminal settings used with this setup
 - `nvim_keys.txt`
   Practical Neovim key notes for this setup
 - `nvim_tree_keys.txt`
@@ -53,10 +56,21 @@ Copy:
 
 to the place where you keep your active `tmux.conf`.
 
+### Windows Terminal
+
+If you want the same terminal-side rendering and font behavior, copy:
+
+`windows_terminal.settings.json`
+
+to:
+
+`C:\Users\A\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json`
+
 
 ## Notes
 
 - The Neovim config includes the current `tokyonight` theme setup.
 - The Neovim config includes current `clangd`, `pyright`, completion, and `F5`/`F6`/`F7`/`F8` workflow settings.
+- The repo includes the current Windows Terminal font/rendering settings snapshot.
 - The repo also includes a note for project-local `.clangd` settings such as disabling unused include warnings.
 - The tmux config uses `Ctrl+w` as prefix instead of the default `Ctrl+b`.
