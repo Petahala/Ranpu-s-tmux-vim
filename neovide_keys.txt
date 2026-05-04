@@ -1,0 +1,48 @@
+Neovide common operations
+=========================
+
+Environment
+- Neovide is the GUI front end for the same Neovim config
+- Most editor commands are the same as terminal Neovim
+- Active config path on Windows: C:\Users\A\AppData\Local\nvim
+
+Open terminal inside Neovim
+- :terminal : open a terminal in the current window
+- :sp | terminal : split horizontally, then open a terminal
+- :vs | terminal : split vertically, then open a terminal
+- :terminal powershell : open a PowerShell terminal explicitly
+- :sp | terminal powershell : horizontal split with PowerShell
+- :vs | terminal powershell : vertical split with PowerShell
+
+Split windows
+- :sp or Ctrl+w s : split horizontally
+- :vs or Ctrl+w v : split vertically
+- Ctrl+h : move to left split
+- Ctrl+j : move to lower split
+- Ctrl+k : move to upper split
+- Ctrl+l : move to right split
+- :close or Ctrl+w c : close current split
+- :only or Ctrl+w o : keep only the current split
+
+Terminal mode
+- i : enter terminal input mode
+- Ctrl+\ then Ctrl+n : leave terminal input mode and return to normal mode
+- After leaving terminal input mode, use Ctrl+h/j/k/l to move to another split
+
+File operations
+- :w : save current file
+- :wa : save all open files
+- :q : quit current window
+- :wq : save and quit current window
+- :x : save and quit if changed
+
+Build workflow in this setup
+- F5 : compile current C/C++ file
+- F6 : run current file's .exe
+- F7 : build the CMake project in build-clangd
+- F8 : refresh build-clangd/compile_commands.json
+- F5 / F6 / F7 / F8 reuse the same bottom build terminal pane
+
+Notes
+- Neovide is a separate GUI window, not embedded inside Windows Terminal
+- Split and terminal commands above are Neovim commands, so they work in Neovide too

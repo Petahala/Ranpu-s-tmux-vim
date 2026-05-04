@@ -22,6 +22,8 @@ This is not a generic Linux dotfiles repo. Some behavior is intentionally Window
   Current tmux config
 - `nvim_keys.txt`
   Practical Neovim key notes for this setup
+- `neovide_keys.txt`
+  Practical Neovide operations for common split, terminal, save, and build tasks
 - `vim_motions_and_deletes.txt`
   Basic built-in Vim movement and delete operations for Neovim use
 - `vim_search_replace_copy_paste_undo.txt`
