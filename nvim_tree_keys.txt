@@ -1,0 +1,51 @@
+NvimTree project list operations
+================================
+
+What this is
+- This is the file tree opened by `Space e`
+- Command form: `:NvimTreeToggle`
+
+Open and close
+- `Space e` : open or close the project list
+- `:NvimTreeOpen` : open the tree
+- `:NvimTreeClose` : close the tree
+- `:NvimTreeToggle` : toggle the tree
+
+Move inside the tree
+- `j` : move down
+- `k` : move up
+- `Enter` or `o` : open file, or expand the folder under the cursor
+- `Backspace` : go back / close the current directory level
+- `-` : move tree root to parent directory
+
+Open files in different ways
+- `Enter` or `o` : open file normally
+- `Ctrl+v` : open file in a vertical split
+- `Ctrl+x` : open file in a horizontal split
+- `Ctrl+t` : open file in a new tab
+- `Tab` : preview file while keeping focus in the tree
+
+Folder navigation tips
+- If the cursor is on a folder, `Enter` expands that folder
+- If you entered a folder and want to go back one level, press `Backspace`
+- If you want to move the whole tree root up to the parent folder, press `-`
+
+Focus switching
+- If focus moved from the tree to the code window, use:
+- `Ctrl+h` : move to left split
+- `Ctrl+j` : move to lower split
+- `Ctrl+k` : move to upper split
+- `Ctrl+l` : move to right split
+- In the common layout where the tree is on the left, `Ctrl+h` usually returns focus to the tree
+
+Useful extras
+- `a` : create file or folder
+- `r` : rename
+- `d` : delete
+- `R` : refresh tree
+- `H` : toggle hidden files
+- `g?` : show the built-in key help for nvim-tree
+
+Notes
+- If you are not sure what a key does, press `g?` inside the tree
+- Most of these are nvim-tree default mappings

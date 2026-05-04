@@ -22,6 +22,8 @@ This is not a generic Linux dotfiles repo. Some behavior is intentionally Window
   Current tmux config
 - `nvim_keys.txt`
   Practical Neovim key notes for this setup
+- `nvim_tree_keys.txt`
+  Practical project list and file tree operations for `nvim-tree`
 - `neovide_keys.txt`
   Practical Neovide operations for common split, terminal, save, and build tasks
 - `vim_motions_and_deletes.txt`
