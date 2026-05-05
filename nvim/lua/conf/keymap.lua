@@ -21,10 +21,30 @@ local function reload_lua_file(path, label)
   end
 end
 
+local function reload_plugin_spec(path, label)
+  local ok, spec = pcall(dofile, path)
+  if not ok then
+    vim.notify("Failed to load " .. label .. ": " .. spec, vim.log.levels.ERROR)
+    return
+  end
+
+  if type(spec) == "table" and type(spec.config) == "function" then
+    local success, err = pcall(spec.config)
+    if not success then
+      vim.notify("Failed to apply " .. label .. ": " .. err, vim.log.levels.ERROR)
+      return
+    end
+  end
+
+  vim.notify("Reloaded " .. label, vim.log.levels.INFO)
+end
+
 local config_root = vim.fn.stdpath("config")
 local keymap_file = config_root .. "/lua/conf/keymap.lua"
 local options_file = config_root .. "/lua/conf/options.lua"
 local tree_file = config_root .. "/lua/conf/plugins/tree.lua"
+local conform_file = config_root .. "/lua/conf/plugins/conform.lua"
+local plugins_init_file = config_root .. "/lua/conf/plugins/init.lua"
 local neovide_file = config_root .. "/lua/conf/neovide.lua"
 
 local cpp_compiler = "D:\\programs\\mingw\\bin\\g++.exe"
@@ -334,11 +354,11 @@ keymap("t", "<C-k>", "<C-\\><C-N><C-w>k", term_opts)
 keymap("t", "<C-l>", "<C-\\><C-N><C-w>l", term_opts)
 
 upsert_user_command("TerminalHere", function(command_opts)
-  open_terminal_here(nil, command_opts.args)
+  open_terminal_here("split", command_opts.args)
 end, {
   nargs = "*",
   complete = "shellcmd",
-  desc = "Open terminal in the current file directory",
+  desc = "Open horizontal terminal split in the current file directory",
 })
 
 upsert_user_command("STerminalHere", function(command_opts)
@@ -370,14 +390,46 @@ end, {
 })
 
 upsert_user_command("ReloadTree", function()
-  reload_lua_file(tree_file, "tree.lua")
+  reload_plugin_spec(tree_file, "tree.lua")
 end, {
   desc = "Reload nvim-tree configuration",
 })
 
+upsert_user_command("ReloadConform", function()
+  reload_plugin_spec(conform_file, "conform.lua")
+end, {
+  desc = "Reload formatting configuration",
+})
+
+upsert_user_command("ReloadLualine", function()
+  local ok, plugins = pcall(dofile, plugins_init_file)
+  if not ok or type(plugins) ~= "table" then
+    vim.notify("Failed to load plugins/init.lua", vim.log.levels.ERROR)
+    return
+  end
+
+  for _, spec in ipairs(plugins) do
+    if type(spec) == "table" and spec[1] == "nvim-lualine/lualine.nvim" and type(spec.config) == "function" then
+      local success, err = pcall(spec.config)
+      if not success then
+        vim.notify("Failed to apply lualine config: " .. err, vim.log.levels.ERROR)
+        return
+      end
+      vim.notify("Reloaded lualine", vim.log.levels.INFO)
+      return
+    end
+  end
+
+  vim.notify("Lualine spec not found in plugins/init.lua", vim.log.levels.WARN)
+end, {
+  desc = "Reload lualine configuration",
+})
+
 upsert_user_command("ReloadConfig", function()
   reload_lua_file(options_file, "options.lua")
-  reload_lua_file(tree_file, "tree.lua")
+  reload_plugin_spec(tree_file, "tree.lua")
+  reload_plugin_spec(conform_file, "conform.lua")
+  vim.cmd("silent! ReloadLualine")
   if vim.g.neovide then
     reload_lua_file(neovide_file, "neovide.lua")
   end
@@ -387,15 +439,10 @@ end, {
   desc = "Reload core Neovim configuration files",
 })
 
-vim.cmd("silent! cunabbrev terminal")
-vim.cmd("silent! cunabbrev term")
-vim.cmd("cnoreabbrev terminal TerminalHere")
-vim.cmd("cnoreabbrev term TerminalHere")
-
 vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", { silent = true })
 vim.keymap.set("n", "<leader>tt", "<Cmd>TerminalHere<CR>", {
   silent = true,
-  desc = "Open terminal in current file directory",
+  desc = "Open horizontal terminal split in current file directory",
 })
 vim.keymap.set("n", "<leader>ts", "<Cmd>STerminalHere<CR>", {
   silent = true,

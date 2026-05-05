@@ -17,6 +17,11 @@ return {
       "clangd",
       "pyright",
     }
+    local mason_packages = {
+      "clangd",
+      "pyright",
+      "stylua",
+    }
 
     vim.api.nvim_create_autocmd("LspAttach", {
       desc = "LSP actions",
@@ -65,7 +70,7 @@ return {
     require("mason").setup()
 
     require("mason-tool-installer").setup({
-      ensure_installed = servers,
+      ensure_installed = mason_packages,
       auto_update = false,
       run_on_start = true,
       start_delay = 3000,

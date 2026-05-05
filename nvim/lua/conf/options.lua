@@ -1,23 +1,24 @@
 local options = {
   backup = false,
   autoread = true,
+  autoindent = true,
   background = "dark",
   clipboard = "unnamedplus",
   cmdheight = 2,
   completeopt = { "menuone", "noselect" } ,
   confirm = true,
   conceallevel = 0,
-  fileencoding = "utf-8",
   hlsearch = true,
   incsearch = true,
   ignorecase = true,
-  ro = false,
+  laststatus = 2,
   mouse = "a",
   pumheight = 10,
   showmode = false,
   showtabline = 2,
   smartcase = true,
   smartindent = true,
+  cindent = true,
   splitbelow = true,
   splitright = true,
   swapfile = false,
@@ -41,8 +42,16 @@ local options = {
 }
 
 for k, v in pairs(options) do
-    vim.opt[k] = v
+    pcall(function()
+        vim.opt[k] = v
+    end)
 end
+
+pcall(function()
+    if vim.bo.buftype == "" and vim.bo.modifiable then
+        vim.bo.fileencoding = "utf-8"
+    end
+end)
 
 -- Create an autocommand group for file-specific settings
 vim.api.nvim_create_augroup("FileTypeSpecific", { clear = true })
@@ -57,8 +66,26 @@ vim.api.nvim_create_autocmd("FileType", {
     group = "FileTypeSpecific",
 })
 
-vim.cmd("autocmd BufEnter * set formatoptions-=cro")
-vim.cmd("autocmd BufEnter * setlocal formatoptions-=cro")
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = { "c", "cpp" },
+    callback = function()
+        vim.opt_local.cindent = true
+        vim.opt_local.shiftwidth = 4
+        vim.opt_local.tabstop = 4
+        vim.opt_local.expandtab = true
+    end,
+    group = "FileTypeSpecific",
+})
+
+local formatoptions_group = vim.api.nvim_create_augroup("FormatOptionsAdjustments", { clear = true })
+
+vim.api.nvim_create_autocmd("BufEnter", {
+    group = formatoptions_group,
+    callback = function()
+        vim.opt.formatoptions:remove({ "c", "r", "o" })
+        vim.opt_local.formatoptions:remove({ "c", "r", "o" })
+    end,
+})
 
 vim.opt.shortmess:append "c"
 
