@@ -8,6 +8,7 @@ return {
   config = function()
     local function on_attach(bufnr)
       local api = require("nvim-tree.api")
+      local core = require("nvim-tree.core")
 
       local function opts(desc)
         return {
@@ -19,26 +20,29 @@ return {
         }
       end
 
+      local function focus_first_visible_node()
+        local first_line = core.get_nodes_starting_line()
+        local line_count = vim.api.nvim_buf_line_count(bufnr)
+        if first_line <= 0 or first_line > line_count then
+          return nil
+        end
+
+        pcall(vim.api.nvim_win_set_cursor, 0, { first_line, 0 })
+        return api.tree.get_node_under_cursor()
+      end
+
       local function actionable_node()
         local node = api.tree.get_node_under_cursor()
         if node then
           return node
         end
 
-        local ok, core = pcall(require, "nvim-tree.core")
-        local explorer = ok and core.get_explorer() or nil
+        local explorer = core.get_explorer()
         if not explorer or not explorer.live_filter or not explorer.live_filter.filter then
           return nil
         end
 
-        local first_line = core.get_nodes_starting_line()
-        local line_count = vim.api.nvim_buf_line_count(bufnr)
-        if first_line > line_count then
-          return nil
-        end
-
-        pcall(vim.api.nvim_win_set_cursor, 0, { first_line, 0 })
-        return api.tree.get_node_under_cursor()
+        return focus_first_visible_node()
       end
 
       local function with_node(desc, fn)
