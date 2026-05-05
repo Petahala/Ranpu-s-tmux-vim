@@ -2,16 +2,43 @@ if not vim.g.neovide then
   return
 end
 
+local last_cwd_file = vim.fn.stdpath("state") .. "/neovide_last_cwd.txt"
+
 local function apply_neovide_theme()
   vim.opt.background = "dark"
   pcall(vim.cmd.colorscheme, "tokyonight-night")
 end
 
-apply_neovide_theme()
+local function restore_last_cwd()
+  if vim.fn.argc() > 0 or vim.fn.filereadable(last_cwd_file) == 0 then
+    return
+  end
 
-vim.g.neovide_cursor_animation_length = 0.15
-vim.g.neovide_cursor_short_animation_length = 0.04
-vim.g.neovide_cursor_trail_size = 0.5
+  local lines = vim.fn.readfile(last_cwd_file)
+  local last_cwd = lines[1]
+  if not last_cwd or last_cwd == "" or vim.fn.isdirectory(last_cwd) == 0 then
+    return
+  end
+
+  vim.cmd.cd(vim.fn.fnameescape(last_cwd))
+end
+
+local function save_current_cwd()
+  local cwd = vim.fn.getcwd()
+  if cwd == "" then
+    return
+  end
+
+  vim.fn.mkdir(vim.fn.fnamemodify(last_cwd_file, ":h"), "p")
+  vim.fn.writefile({ cwd }, last_cwd_file)
+end
+
+apply_neovide_theme()
+restore_last_cwd()
+
+vim.g.neovide_cursor_animation_length = 0.18
+vim.g.neovide_cursor_short_animation_length = 0.05
+vim.g.neovide_cursor_trail_size = 0.35
 vim.g.neovide_cursor_antialiasing = true
 vim.g.neovide_cursor_animate_in_insert_mode = true
 vim.g.neovide_cursor_animate_command_line = true
@@ -33,4 +60,8 @@ end, { desc = "Neovide zoom reset" })
 
 vim.api.nvim_create_autocmd({ "UIEnter", "VimEnter" }, {
   callback = apply_neovide_theme,
+})
+
+vim.api.nvim_create_autocmd("VimLeavePre", {
+  callback = save_current_cwd,
 })
